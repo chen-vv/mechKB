@@ -70,8 +70,8 @@ public class Volume {
         frame.setSize(640, 480);
         frame.setVisible(true);
 
-        s1 = getClass().getResource("Keyboard_Button_1.wav");
-        s2 = getClass().getResource("Keyboard_Button_2.wav");
+//        s1 = getClass().getResource("Keyboard_Button_1.wav");
+//        s2 = getClass().getResource("Keyboard_Button_2.wav");
 //        URL s3 = getClass().getResource("Keyboard_Button_3.wav");
 //        URL s4 = getClass().getResource("Keyboard_Button_4.wav");
 //        URL s5 = getClass().getResource("Keyboard_Button_5.wav");

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class WordBank {
-    private static final int MAX_RANDOM_WORDS = 150;
+    private static final int MAX_RANDOM_WORDS = 5;
     public ArrayList<String> wordList;
 
     public WordBank() {

@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ public class MyFrame extends JFrame implements KeyListener {
     JLabel typeArea;
     JLabel words;
     JLabel timer;
+    JLabel description;
     JButton resetButton;
     Countdown countdown = new Countdown();
     WordBank wordBank = new WordBank();
@@ -38,6 +40,15 @@ public class MyFrame extends JFrame implements KeyListener {
     private static final Integer SPACE = 32;
     private static final Integer BACKSPACE = 8;
     private static final Integer ENTER = 10;
+    private static final Integer LETTER_START = 65;
+    private static final Integer LETTER_END = 90;
+    private static final Integer NUMBER_START = 48;
+    private static final Integer NUMBER_END = 57;
+    private static final Integer ARROW_START = 37;
+    private static final Integer ARROW_END = 40;
+    private String instructions = "<html> Feel free to start typing whenever. Your typing speed will be calculated once all the " +
+            "words have been typed. " +
+            "<br>To restart the timer, hold down space and backspace. Have fun!</html>";
 
     public MyFrame() {
         try {
@@ -46,29 +57,40 @@ public class MyFrame extends JFrame implements KeyListener {
             Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE, null, e);
         }
 
+        countdown.frame = this;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1010, 610);
         frame.getContentPane().setBackground(Color.pink);
         frame.setLayout(null);
         frame.addKeyListener(this);
 
+        //TODO: CREATE CLASS FOR TYPEAREA & WORDS?
         typeArea = new JLabel();
         typeArea.setBounds(0, 250, 1000, 250);
         typeArea.setText("<html>");
-        typeArea.setFont(new Font("Roboto", Font.PLAIN, 30));
+        typeArea.setFont(new Font("Segoe UI", Font.PLAIN, 25));
         typeArea.setBackground(Color.black);
         typeArea.setForeground(Color.pink);
+        typeArea.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         typeArea.setOpaque(true);
 
         words = new JLabel();
         words.setText("<html>" + wordList + "</html>");
-        words.setFont(new Font("Roboto", Font.PLAIN, 30));
+        words.setFont(new Font("Segoe UI", Font.PLAIN, 25));
         words.setBounds(0, 0, 1000, 250);
         words.setBackground(Color.pink);
         words.setForeground(Color.WHITE);
-        JScrollPane scroller = new JScrollPane(words, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        words.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         words.setOpaque(true);
+
+        description = new JLabel();;
+        description.setText(instructions);
+        description.setBounds(0, 500, 800, 50);
+        description.setFont(new Font("Segoe UI", Font.ITALIC, 15));
+        description.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        description.setBackground(Color.black);
+        description.setForeground(Color.WHITE);
+        description.setOpaque(true);
 
         timer = countdown.timeLabel;
         timer.setBounds(800, 500, 100, 50);
@@ -88,9 +110,9 @@ public class MyFrame extends JFrame implements KeyListener {
         menu_settings.add(menuItem_mute);
         frame.setJMenuBar(menu_main);
 
-//        frame.add(scroller);
         frame.add(words);
         frame.add(typeArea);
+        frame.add(description);
         frame.add(timer);
         frame.add(resetButton);
         frame.setVisible(true);
@@ -104,23 +126,63 @@ public class MyFrame extends JFrame implements KeyListener {
     public void keyTyped(KeyEvent e) {
         char keyChar = e.getKeyChar();
 
-        if (current_letter < wordListArray.length && keyChar == wordListArray[current_letter]) {
+        if (current_letter <= wordListArray.length - 2 && keyChar == wordListArray[current_letter]) {
             typeArea.setText(typeArea.getText() + keyChar);
             ++current_letter;
 
             if (keyChar == ' ') {
                 ++current_word;
-                System.err.println("word changed: " + current_word);
+            }
+
+            if (current_letter == wordListArray.length - 1) {
+                System.out.println(current_letter);
+                countdown.timer.stop();
+                displayWPM();
             }
         }
     }
 
-    private void restart() {
+    private void displayWPM() {
+        int WPM = (current_letter/5) * 60 / (60 - countdown.seconds);
+        String wpmMessage = "<html>Your average typing speed is: ";
+        description.setText(wpmMessage + WPM + "<br>");
+        String feedback = "";
+
+        if (WPM < 35) {
+            feedback = "A bit on the slow side, but A+ for effort!  :^)";
+        } else if (WPM < 46) {
+            feedback = "Most people have a typing speed of 35 to 45 WPM. " +
+                    "What a <b>typical</b> result... badum-tss!";
+        } else if (WPM < 71) {
+            description.setText(description.getText() + "");
+        } else if (WPM < 110) {
+            feedback = "Don't mean to stereotype, but any chance that you're a computer major?";
+        } else if (WPM < 161) {
+            feedback = "Such speed, much wow. I bet you were real key-bored doing this test  :^)";
+        }
+        else if (WPM < 216) {
+            feedback = "Holy cow! Are you a robot or something!?";
+        } else {
+            feedback = "You beat the world record for fastest typing speed! Stella Pajunas would be proud of you";
+        }
+
+        description.setText(description.getText() + feedback);
+    }
+
+    public void restart() {
         keysPressed.clear();
-        typeArea.setText("<html>");
+        wordList = wordBank.getRandomWords();
+        wordListArray = wordList.toCharArray();
         current_word = 0;
         current_letter = 0;
-        resetButton.doClick();
+
+        typeArea.setText("<html>");
+        words.setText("<html>" + wordList + "</html>");
+        description.setText(instructions);
+
+        if (Objects.equals(resetButton.getText(), "Reset")) {
+            resetButton.doClick();
+        }
     }
 
     @Override
@@ -133,16 +195,22 @@ public class MyFrame extends JFrame implements KeyListener {
                     (keyCode == SPACE && keysPressed.contains(BACKSPACE))) {
                 restart();
             }
+            else if (keyCode == BACKSPACE || keyCode == SPACE) {
+                keysPressed.add(keyCode);
+            }
+            else if (isBetween(keyCode, 65, 90) && !countdown.started) {
+                resetButton.doClick();
+            }
             return;
         }
 
         // Arrow key sounds
-        if (isBetween(keyCode, 37, 40)) {
+        if (isBetween(keyCode, ARROW_START, ARROW_END)) {
             sound.playClip(arrows_start);
         }
 
         // Letter key sounds
-        else if (isBetween(keyCode, 65, 90)) {
+        else if (isBetween(keyCode, LETTER_START, LETTER_END)) {
             sound.playClip(letters_start);
             if (!countdown.started) {
                 resetButton.doClick();
@@ -150,7 +218,7 @@ public class MyFrame extends JFrame implements KeyListener {
         }
 
         // Number key sounds
-        else if (isBetween(keyCode, 48, 57)) {
+        else if (isBetween(keyCode, NUMBER_START, NUMBER_END)) {
             sound.playClip(numbers_start);
         }
 
@@ -161,27 +229,14 @@ public class MyFrame extends JFrame implements KeyListener {
 
         // Space key sound
         else if (keyCode == SPACE) {
-            System.out.println("space pressed: " + keyCode);
             keysPressed.add(SPACE);
-
             sound.playClip(space_enter_start);
-
-            if (keysPressed.contains(BACKSPACE)) {
-//                keysPressed.remove(BACKSPACE);
-                System.out.println("space pressed while backspace");
-            }
         }
 
         // Backspace key sound
         else if (keyCode == BACKSPACE) {
-            System.out.println("backspace pressed: " + keyCode);
             keysPressed.add(BACKSPACE);
             sound.playClip(backspace_start);
-
-            if (keysPressed.contains(SPACE)) {
-//                keysPressed.remove(SPACE);
-                System.out.println("backspace pressed while space");
-            }
         }
 
         // Default key sound
@@ -194,25 +249,22 @@ public class MyFrame extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+
         if (isMuted) {
+            if (keyCode == BACKSPACE || keyCode == SPACE) {
+                keysPressed.remove(SPACE);
+            }
             return;
         }
 
-        // Called whenever a button is released
-        int keyCode = e.getKeyCode();
-
         // Arrow key sounds
-        if (isBetween(keyCode, 37, 40)) {
+        if (isBetween(keyCode, ARROW_START, ARROW_END)) {
             sound.playClip(arrows_end);
         }
 
-//        // Letter key sounds
-//        else if (isBetween(keyCode, 65, 90)) {
-//            sound.playClip(letters_start);
-//        }
-
         // Number key sounds
-        else if (isBetween(keyCode, 48, 57)) {
+        else if (isBetween(keyCode, NUMBER_START, NUMBER_END)) {
             sound.playClip(numbers_end);
         }
 
@@ -223,13 +275,13 @@ public class MyFrame extends JFrame implements KeyListener {
 
         // Space key sound
         else if (keyCode == SPACE) {
-            keysPressed.remove((Integer) SPACE);
+            keysPressed.remove(SPACE);
             sound.playClip(space_enter_end);
         }
 
         // Backspace key sound
         else if (keyCode == BACKSPACE) {
-            keysPressed.remove((Integer) BACKSPACE);
+            keysPressed.remove(BACKSPACE);
             sound.playClip(backspace_end);
         }
 
@@ -244,11 +296,4 @@ public class MyFrame extends JFrame implements KeyListener {
     public static boolean isBetween(int x, int lower, int upper) {
         return lower <= x && x <= upper;
     }
-
-//    public String deleteLastChar(String str) {
-//        if (str != null && str.length() > 0 && str.charAt(str.length() - 1) == 'x') {
-//            str = str.substring(0, str.length() - 1);
-//        }
-//        return str;
-//    }
 }

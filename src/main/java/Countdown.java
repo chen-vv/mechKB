@@ -2,11 +2,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class Countdown implements ActionListener {
     private static final int MILLIS = 1000;
     JButton resetButton = new JButton("Start");
     JLabel timeLabel = new JLabel();
+
+//    JLabel words_fromFrame = null;
+//    JLabel typeArea_fromFrame = null;
+//    JLabel description_fromFrame = null;
+//    WordBank wordbank_fromFrame = null;
+//    ArrayList<Integer> keysPressed_fromFrame = null;
+    MyFrame frame = null;
+
     int elapsedTime = 0;
     int seconds = 0;
     int minutes = 1;
@@ -32,11 +41,11 @@ public class Countdown implements ActionListener {
 
     Countdown() {
         timeLabel.setText(minutes_string + ":" + seconds_string);
-        timeLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+        timeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         timeLabel.setOpaque(true);
         timeLabel.setHorizontalAlignment(JTextField.CENTER);
 
-        resetButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+        resetButton.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         resetButton.setBackground(Color.black);
         resetButton.setForeground(Color.pink);
         resetButton.setContentAreaFilled(false);
@@ -52,6 +61,7 @@ public class Countdown implements ActionListener {
                 started = false;
                 resetButton.setText("Start");
                 reset();
+                frame.restart();
             }
             else {
                 started = true;
