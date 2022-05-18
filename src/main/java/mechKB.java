@@ -75,7 +75,7 @@ public class mechKB extends JFrame implements KeyListener {
 
         typeArea = new JLabel();
         typeArea.setBounds(0, 250, 1000, 250);
-        typeArea.setText("<html>");
+        typeArea.setText("<html>_");
         typeArea.setFont(new Font("Segoe UI", Font.PLAIN, 25));
         typeArea.setBackground(Color.black);
         typeArea.setForeground(Color.pink);
@@ -138,7 +138,9 @@ public class mechKB extends JFrame implements KeyListener {
         char keyChar = Character.toLowerCase(e.getKeyChar());
 
         if (current_letter <= wordListArray.length - 2 && keyChar == wordListArray[current_letter]) {
-            typeArea.setText(typeArea.getText() + keyChar);
+            String text = typeArea.getText();
+            text = text.substring(0, text.length() - 1);
+            typeArea.setText(text + keyChar + "_");
             ++current_letter;
 
             if (current_letter == wordListArray.length - 1) {
@@ -190,7 +192,7 @@ public class mechKB extends JFrame implements KeyListener {
         wordListArray = wordList.toCharArray();
         current_letter = 0;
 
-        typeArea.setText("<html>");
+        typeArea.setText("<html>_");
         words.setText("<html>" + wordList + "</html>");
         description.setText(instructions);
 
