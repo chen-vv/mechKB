@@ -6,8 +6,11 @@ import java.util.Scanner;
 
 public class WordBank {
     private static final int MAX_RANDOM_WORDS = 5;
-    public ArrayList<String> wordList;
+    private ArrayList<String> wordList;
 
+    /**
+     * Reads a list of random words from a file and stores them in wordList
+     */
     public WordBank() {
         try {
             String path = new File("src/main/resources/word_bank.txt").getAbsolutePath();
@@ -23,6 +26,11 @@ public class WordBank {
         }
     }
 
+    /**
+     * Retrieves and returns a specified number of words from wordList
+     * @return MAX_RANDOM_WORDS number of random words from wordList
+     *         as a String with a space in between each word
+     */
     public String getRandomWords() {
         StringBuilder randomWords = new StringBuilder();
         Collections.shuffle(wordList);

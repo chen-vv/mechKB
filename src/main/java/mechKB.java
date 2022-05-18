@@ -8,6 +8,11 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A mechKB is an app that allows users to test their typing speed
+ * while simulating mechanical keyboard sounds whenever a physical
+ * key is pressed.
+ */
 public class mechKB extends JFrame implements KeyListener {
     private final JLabel typeArea;
     private final JLabel words;
@@ -21,7 +26,6 @@ public class mechKB extends JFrame implements KeyListener {
 
     private char[] wordListArray = wordList.toCharArray();
     private int current_letter = 0;
-    private int current_word = 0;
     private boolean isMuted = false;
     private  boolean firstPress = true;
 
@@ -50,9 +54,8 @@ public class mechKB extends JFrame implements KeyListener {
             "<br>To restart the timer, hold down space and backspace. Have fun!</html>";
 
     /**
-     * Creates an instance of a mechKB, setting up the application GUI.
-     * A mechKB is an app that allows users to test their typing speed
-     * while simulating mechanical keyboard sounds.
+     * Creates an instance of a mechKB, setting up the application GUI
+     * and initializing all necessary variables.
      */
     public mechKB() {
         try {
@@ -87,7 +90,7 @@ public class mechKB extends JFrame implements KeyListener {
         words.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         words.setOpaque(true);
 
-        description = new JLabel();;
+        description = new JLabel();
         description.setText(instructions);
         description.setBounds(0, 500, 800, 50);
         description.setFont(new Font("Segoe UI", Font.ITALIC, 15));
@@ -107,9 +110,7 @@ public class mechKB extends JFrame implements KeyListener {
         JMenuBar menu_main = new JMenuBar();
         JMenu menu_settings = new JMenu("Settings");
         JMenuItem menuItem_mute = new JMenuItem("Mute");
-        menuItem_mute.addActionListener(e -> {
-            isMuted = !isMuted;
-        });
+        menuItem_mute.addActionListener(e -> isMuted = !isMuted);
         menu_main.add(menu_settings);
         menu_settings.add(menuItem_mute);
 
@@ -137,10 +138,6 @@ public class mechKB extends JFrame implements KeyListener {
             typeArea.setText(typeArea.getText() + keyChar);
             ++current_letter;
 
-            if (keyChar == ' ') {
-                ++current_word;
-            }
-
             if (current_letter == wordListArray.length - 1) {
                 countdown.timer.stop();
                 displayWPM();
@@ -164,7 +161,7 @@ public class mechKB extends JFrame implements KeyListener {
             feedback = "Most people have a typing speed of 35 to 45 WPM. " +
                     "What a <b>typical</b> result... badum-tss!";
         } else if (WPM < 71) {
-            description.setText(description.getText() + "");
+            feedback = "Good job! Here's a random joke: I walked into a bar, ouch that hurt :(";
         } else if (WPM < 110) {
             feedback = "Don't mean to stereo-type, but any chance that you're a computer major?";
         } else if (WPM < 161) {
@@ -187,7 +184,6 @@ public class mechKB extends JFrame implements KeyListener {
         keysPressed.clear();
         wordList = wordBank.getRandomWords();
         wordListArray = wordList.toCharArray();
-        current_word = 0;
         current_letter = 0;
 
         typeArea.setText("<html>");
