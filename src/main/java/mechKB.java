@@ -153,7 +153,7 @@ public class mechKB extends JFrame implements KeyListener {
         int WPM = (current_letter/5) * 60 / (60 - countdown.seconds);
         String wpmMessage = "<html>Your average typing speed is: ";
         description.setText(wpmMessage + WPM + "<br>");
-        String feedback = "";
+        String feedback;
 
         if (WPM < 35) {
             feedback = "A bit on the slow side, but A+ for effort!  :^)";
