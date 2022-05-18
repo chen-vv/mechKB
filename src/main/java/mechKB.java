@@ -28,6 +28,7 @@ public class mechKB extends JFrame implements KeyListener {
     private int current_letter = 0;
     private boolean isMuted = false;
     private  boolean firstPress = true;
+    boolean timer_done = false;
 
     private final URL space_enter_start = getClass().getResource("Keyboard_Button_10.1.wav");
     private final URL space_enter_end = getClass().getResource("Keyboard_Button_10.2.wav");
@@ -132,6 +133,8 @@ public class mechKB extends JFrame implements KeyListener {
      */
     @Override
     public void keyTyped(KeyEvent e) {
+        if (timer_done) return;
+
         char keyChar = Character.toLowerCase(e.getKeyChar());
 
         if (current_letter <= wordListArray.length - 2 && keyChar == wordListArray[current_letter]) {
@@ -149,7 +152,8 @@ public class mechKB extends JFrame implements KeyListener {
      * Calculates user's typing speed in words per minute (WPM), then
      * displays result along with a short feedback message.
      */
-    private void displayWPM() {
+    void displayWPM() {
+        timer_done = true;
         int WPM = (current_letter/5) * 60 / (60 - countdown.seconds);
         String wpmMessage = "<html>Your average typing speed is: ";
         description.setText(wpmMessage + WPM + "<br>");
@@ -209,6 +213,8 @@ public class mechKB extends JFrame implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
+        if (timer_done) return;
+
         int keyCode = e.getKeyCode();
 
         if (!firstPress || isMuted) {
@@ -279,6 +285,8 @@ public class mechKB extends JFrame implements KeyListener {
      */
     @Override
     public void keyReleased(KeyEvent e) {
+        if (timer_done) return;
+
         int keyCode = e.getKeyCode();
 
         if (isMuted) {

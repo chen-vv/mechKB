@@ -24,6 +24,7 @@ public class Countdown implements ActionListener {
                 --minutes;
             }
         } else {
+            frame.displayWPM();
             seconds = 0;
         }
 
@@ -87,5 +88,6 @@ public class Countdown implements ActionListener {
         seconds_string = String.format("%02d", seconds);
         minutes_string = String.format("%1d", minutes);
         timeLabel.setText(minutes_string + ":" + seconds_string);
+        frame.timer_done = false;
     }
 }
