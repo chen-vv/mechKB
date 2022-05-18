@@ -59,7 +59,6 @@ has
 look
 two
 more
-write
 go
 see
 number

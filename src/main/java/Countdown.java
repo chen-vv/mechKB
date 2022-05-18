@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class Countdown implements ActionListener {
     private static final int MILLIS = 1000;
@@ -14,7 +13,7 @@ public class Countdown implements ActionListener {
 //    JLabel description_fromFrame = null;
 //    WordBank wordbank_fromFrame = null;
 //    ArrayList<Integer> keysPressed_fromFrame = null;
-    MyFrame frame = null;
+    mechKB frame = null;
 
     int elapsedTime = 0;
     int seconds = 0;

@@ -8,9 +8,22 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MyFrame extends JFrame implements KeyListener {
-    JFrame frame = new JFrame("TypeWriter");
+public class mechKB extends JFrame implements KeyListener {
+    private final JLabel typeArea;
+    private final JLabel words;
+    private final JLabel description;
+    private final JButton resetButton;
     private final Sound sound = new Sound();
+    private final ArrayList<Integer> keysPressed = new ArrayList<>();
+    private final Countdown countdown = new Countdown();
+    private final WordBank wordBank = new WordBank();
+    private String wordList = wordBank.getRandomWords();
+
+    private char[] wordListArray = wordList.toCharArray();
+    private int current_letter = 0;
+    private int current_word = 0;
+    private boolean isMuted = false;
+    private  boolean firstPress = true;
 
     private final URL space_enter_start = getClass().getResource("Keyboard_Button_10.1.wav");
     private final URL space_enter_end = getClass().getResource("Keyboard_Button_10.2.wav");
@@ -23,20 +36,6 @@ public class MyFrame extends JFrame implements KeyListener {
     private final URL backspace_start = getClass().getResource("Keyboard_Button_1.1.wav");
     private final URL backspace_end = getClass().getResource("Keyboard_Button_1.2.wav");
 
-    JLabel typeArea;
-    JLabel words;
-    JLabel timer;
-    JLabel description;
-    JButton resetButton;
-    Countdown countdown = new Countdown();
-    WordBank wordBank = new WordBank();
-    String wordList = wordBank.getRandomWords();
-    ArrayList<Integer> keysPressed = new ArrayList<>();
-    char[] wordListArray = wordList.toCharArray();
-    int current_letter = 0;
-    int current_word = 0;
-    boolean isMuted = false;
-    boolean firstPress = true;
     private static final Integer SPACE = 32;
     private static final Integer BACKSPACE = 8;
     private static final Integer ENTER = 10;
@@ -46,25 +45,30 @@ public class MyFrame extends JFrame implements KeyListener {
     private static final Integer NUMBER_END = 57;
     private static final Integer ARROW_START = 37;
     private static final Integer ARROW_END = 40;
-    private String instructions = "<html> Feel free to start typing whenever. Your typing speed will be calculated once all the " +
-            "words have been typed. " +
+    private final String instructions = "<html> Feel free to start typing whenever. Your typing speed will be " +
+            "calculated once all the words have been typed. " +
             "<br>To restart the timer, hold down space and backspace. Have fun!</html>";
 
-    public MyFrame() {
+    /**
+     * Creates an instance of a mechKB, setting up the application GUI.
+     * A mechKB is an app that allows users to test their typing speed
+     * while simulating mechanical keyboard sounds.
+     */
+    public mechKB() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(mechKB.class.getName()).log(Level.SEVERE, null, e);
         }
 
         countdown.frame = this;
+        JFrame frame = new JFrame("TypeWriter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1010, 610);
         frame.getContentPane().setBackground(Color.pink);
         frame.setLayout(null);
         frame.addKeyListener(this);
 
-        //TODO: CREATE CLASS FOR TYPEAREA & WORDS?
         typeArea = new JLabel();
         typeArea.setBounds(0, 250, 1000, 250);
         typeArea.setText("<html>");
@@ -92,7 +96,7 @@ public class MyFrame extends JFrame implements KeyListener {
         description.setForeground(Color.WHITE);
         description.setOpaque(true);
 
-        timer = countdown.timeLabel;
+        JLabel timer = countdown.timeLabel;
         timer.setBounds(800, 500, 100, 50);
         timer.setForeground(Color.WHITE);
         timer.setBackground(Color.black);
@@ -100,16 +104,16 @@ public class MyFrame extends JFrame implements KeyListener {
         resetButton = countdown.resetButton;
         resetButton.setBounds(900, 500, 100, 50);
 
-        // Build the menu
         JMenuBar menu_main = new JMenuBar();
         JMenu menu_settings = new JMenu("Settings");
         JMenuItem menuItem_mute = new JMenuItem("Mute");
-        menuItem_mute.addActionListener(e -> volumeMute());
-
+        menuItem_mute.addActionListener(e -> {
+            isMuted = !isMuted;
+        });
         menu_main.add(menu_settings);
         menu_settings.add(menuItem_mute);
-        frame.setJMenuBar(menu_main);
 
+        frame.setJMenuBar(menu_main);
         frame.add(words);
         frame.add(typeArea);
         frame.add(description);
@@ -118,13 +122,16 @@ public class MyFrame extends JFrame implements KeyListener {
         frame.setVisible(true);
     }
 
-    private void volumeMute() {
-        isMuted = !isMuted;
-    }
-
+    /**
+     * Invoked when a physical key that maps to an input character is pressed down.
+     * Checks whether user keyboard input matches the example text displayed for
+     * typing test. If matching, displays the lowercase letter of user's input.
+     *
+     * @param e An event which indicates that a keystroke occurred in a component
+     */
     @Override
     public void keyTyped(KeyEvent e) {
-        char keyChar = e.getKeyChar();
+        char keyChar = Character.toLowerCase(e.getKeyChar());
 
         if (current_letter <= wordListArray.length - 2 && keyChar == wordListArray[current_letter]) {
             typeArea.setText(typeArea.getText() + keyChar);
@@ -135,13 +142,16 @@ public class MyFrame extends JFrame implements KeyListener {
             }
 
             if (current_letter == wordListArray.length - 1) {
-                System.out.println(current_letter);
                 countdown.timer.stop();
                 displayWPM();
             }
         }
     }
 
+    /**
+     * Calculates user's typing speed in words per minute (WPM), then
+     * displays result along with a short feedback message.
+     */
     private void displayWPM() {
         int WPM = (current_letter/5) * 60 / (60 - countdown.seconds);
         String wpmMessage = "<html>Your average typing speed is: ";
@@ -156,19 +166,23 @@ public class MyFrame extends JFrame implements KeyListener {
         } else if (WPM < 71) {
             description.setText(description.getText() + "");
         } else if (WPM < 110) {
-            feedback = "Don't mean to stereotype, but any chance that you're a computer major?";
+            feedback = "Don't mean to stereo-type, but any chance that you're a computer major?";
         } else if (WPM < 161) {
             feedback = "Such speed, much wow. I bet you were real key-bored doing this test  :^)";
         }
         else if (WPM < 216) {
             feedback = "Holy cow! Are you a robot or something!?";
         } else {
-            feedback = "You beat the world record for fastest typing speed! Stella Pajunas would be proud of you";
+            feedback = "You beat the world record for fastest typing speed! Stella Pajunas would be proud of you (and also jealous!)";
         }
 
         description.setText(description.getText() + feedback);
     }
 
+    /**
+     * Clears all associated components and allows user to attempt a new
+     * typing test.
+     */
     public void restart() {
         keysPressed.clear();
         wordList = wordBank.getRandomWords();
@@ -185,11 +199,22 @@ public class MyFrame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Invoked when any physical key is pressed down.
+     * Plays first half of mechanical keyboard sound when user presses a key,
+     * unless Mute option has been selected.
+     * If user presses and holds down a key, only one click sound is played.
+     * If pressed key maps to an alphabetical letter, test timer is started.
+     *
+     * Modifies keysPressed to track when space and backspace keys are pressed
+     * simultaneously, in which case restart() is invoked.
+     *
+     * @param e An event which indicates that a keystroke occurred in a component
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        // Invoked when a physical key is pressed down. Uses KeyCode, int output
         if (!firstPress || isMuted) {
             if ((keyCode == BACKSPACE && keysPressed.contains(SPACE)) ||
                     (keyCode == SPACE && keysPressed.contains(BACKSPACE))) {
@@ -247,6 +272,15 @@ public class MyFrame extends JFrame implements KeyListener {
         firstPress = false;
     }
 
+    /**
+     * Invoked when any physical key is released after being pressed down.
+     * Plays latter half of mechanical keyboard sound when user releases a key,
+     * unless Mute option has been selected.
+     *
+     * Modifies keysPressed to track if space or backspace keys were released.
+     *
+     * @param e An event which indicates that a keystroke occurred in a component
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -293,6 +327,14 @@ public class MyFrame extends JFrame implements KeyListener {
         firstPress = true;
     }
 
+    /**
+     * Checks if an integer is between two integer values
+     *
+     * @param x integer to check if between lower and upper ranges
+     * @param lower integer representing lower bound of range
+     * @param upper integer representing upper bound of range
+     * @return true if lower <= x <= upper, false otherwise
+     */
     public static boolean isBetween(int x, int lower, int upper) {
         return lower <= x && x <= upper;
     }
