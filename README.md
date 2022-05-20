@@ -1,6 +1,6 @@
 # mechKB - Typing Test w/ Mechanical Keyboard Sounds
 <img src="https://github.com/chen-vv/mechKB/blob/master/readme/demo.gif" alt="GIF demo of mechKB application" width="900" height="550"/>
-A Java project that tests your typing speed and plays mechanical keyboard sounds. Perfect for individuals who want to practice typing in English while listening to the satisfying clicks of mechanical keys. 
+A Java project that tests your typing speed and plays mechanical keyboard sounds. Perfect for individuals who want to know their typing speed or practice typing in English while listening to the satisfying clicks of mechanical keys. 
 
 ## Usage
 1. Clone this repo locally 
