@@ -51,8 +51,8 @@ public class mechKB extends JFrame implements KeyListener {
     private static final Integer ARROW_START = 37;
     private static final Integer ARROW_END = 40;
     private final String instructions = "<html> Feel free to start typing whenever. Your typing speed will be " +
-            "calculated once all the words have been typed. " +
-            "<br>To restart the timer, hold down space and backspace. Have fun!</html>";
+            "calculated once all the words have been typed, or when the timer is up. " +
+            "To restart the timer, hold down <b>space</b> and <b>backspace</b>. Have fun!</html>";
 
     /**
      * Creates an instance of a mechKB, setting up the application GUI
@@ -66,11 +66,12 @@ public class mechKB extends JFrame implements KeyListener {
         }
 
         countdown.frame = this;
-        JFrame frame = new JFrame("TypeWriter");
+        JFrame frame = new JFrame("MechKB");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1010, 610);
         frame.getContentPane().setBackground(Color.pink);
         frame.setLayout(null);
+        frame.setLocationRelativeTo(null);
         frame.addKeyListener(this);
 
         typeArea = new JLabel();
